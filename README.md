@@ -22,11 +22,11 @@ A arquitetura do projeto é baseada em microsserviços e utiliza as seguintes te
 1.  **Clone o repositório:**
 
     ```bash
-    git clone <seu-repositorio>
+    git clone https://github.com/rddeveloper/gestao-pedidos.git
     cd <diretorio-do-projeto>
     ```
 
-2.  **Construa a imagem da aplicação Spring Boot:**
+2.  **Construa a imagem da aplicação Spring Boot e Inicie a aplicação:**
 
     ```bash
     docker-compose up --build -d
