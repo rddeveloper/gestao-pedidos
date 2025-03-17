@@ -23,7 +23,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LOG_DIRS: /tmp/kafka-data  # Usa um diretório temporário
+      KAFKA_LOG_DIRS: /tmp/kafka-data
     depends_on:
       - zookeeper
     healthcheck:
@@ -34,20 +34,21 @@ services:
     networks:
       - my-network
 
-  # Serviço do PostgreSQL
-  postgres:
-    image: postgres:14
-    container_name: postgres
+  # Serviço do MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
     environment:
-      POSTGRES_DB: gestao-pedidos
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      MYSQL_DATABASE: gestao_pedidos
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
     ports:
-      - "5433:5432"  # Mapeia a porta 5433 do host para a 5432 do container
+      - "3306:3306"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-padmin"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -61,7 +62,7 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - xpack.security.enabled=false  # Desabilita a segurança para permitir HTTP
+      - xpack.security.enabled=false
     ports:
       - "9200:9200"
     volumes:
@@ -92,15 +93,15 @@ services:
     build: .
     container_name: gestao-pedidos-app
     environment:
-      DB_URL: jdbc:postgresql://postgres:5432/gestao-pedidos  # Usa o nome do serviço "postgres"
-      DB_USER: postgres
-      DB_PASS: admin
+      DB_URL: jdbc:mysql://mysql:3306/gestao_pedidos
+      DB_USER: app_user
+      DB_PASS: app_password
       SPRING_ELASTICSEARCH_URIS: http://elasticsearch:9200
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8080:8080"
     depends_on:
-      postgres:
+      mysql:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
@@ -116,7 +117,7 @@ services:
 
 # Volumes para persistência de dados
 volumes:
-  postgres_data:
+  mysql_data:
   elasticsearch_data:
 
 # Rede Docker
