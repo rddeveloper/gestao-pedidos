@@ -118,3 +118,30 @@ A documentação da API é gerada automaticamente pelo SpringDoc OpenAPI e pode 
 ## Segurança
 
 A API é protegida com autenticação e autorização OAuth2, utilizando JWT para troca segura de informações.
+
+## Flyway: Migrações de Banco de Dados e Inicialização Automática
+
+O Flyway é uma ferramenta essencial para gerenciar as alterações no esquema do banco de dados ao longo do tempo. Além de versionar e automatizar as migrações, este projeto foi configurado para que a API seja iniciada com as bases de dados (PostgreSQL e Elasticsearch) já criadas e atualizadas.
+
+### Inicialização Automática das Bases de Dados
+
+Ao iniciar a aplicação Spring Boot, o Flyway executa automaticamente as migrações pendentes no banco de dados PostgreSQL, garantindo que o esquema esteja sempre atualizado. Além disso, a aplicação também configura e inicializa o Elasticsearch, criando os índices necessários para a funcionalidade de busca e indexação.
+
+### Como Funciona
+
+1.  **Migrações PostgreSQL com Flyway:**
+    * Os scripts SQL de migração são armazenados em `src/main/resources/db/migration`.
+    * O Flyway aplica automaticamente as migrações pendentes ao banco de dados PostgreSQL durante a inicialização da aplicação.
+    * Isso garante que o esquema do banco de dados esteja sempre na versão correta, sem intervenção manual.
+
+2.  **Inicialização Elasticsearch:**
+    * A aplicação Spring Boot configura e inicializa o cliente Elasticsearch.
+    * Durante a inicialização, a aplicação verifica se os índices necessários existem no Elasticsearch.
+    * Caso os índices não existam, a aplicação os cria automaticamente, garantindo que o Elasticsearch esteja pronto para uso.
+
+### Benefícios
+
+* **Consistência:** Garante que o banco de dados PostgreSQL e o Elasticsearch estejam sempre em um estado consistente e atualizado.
+* **Automatização:** Elimina a necessidade de intervenção manual para criar ou atualizar as bases de dados.
+* **Facilidade de Implantação:** Simplifica o processo de implantação, pois as bases de dados são inicializadas automaticamente com a aplicação.
+* **Redução de Erros:** Minimiza o risco de erros humanos durante a criação ou atualização das bases de dados.
